@@ -5,7 +5,6 @@ use warnings;
 
 use Config;
 use File::Find;
-use feature ':5.14';
 
 my %dirext = ( $Config{ 'privlib' } => 'pm', $Config{ 'archlib' } => 'so' );
 my @dirs = keys %dirext;
@@ -27,7 +26,7 @@ while ( my ( $dir => $ext ) = each %dirext ) {
                     my $sn = substr( $fn, $dir_len, length($fn) - $dir_len );
                     foreach my $pigdir (@incs) {
                         my $pigname = "$pigdir$sn";
-                        if ( -f $pigname ) { say $pigname }
+                        if ( -f $pigname ) { print "$pigname\n" }
                     }
                 }
                 }
