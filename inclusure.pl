@@ -163,7 +163,7 @@ sub pass_pkgs {
             }
         }
         print "About to delete package: $pkg_delete\n";
-        unless ($dry) { exec 'pkg_delete', '-f', $pkg_delete }
+        unless ($dry) { system 'pkg_delete', '-f', $pkg_delete }
     }
 }
 
