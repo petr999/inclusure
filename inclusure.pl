@@ -7,6 +7,8 @@ use Config;
 use File::Find;
 use FreeBSD::Pkgs;
 
+our $VERSION = '0.0.1';
+
 # Hash in the form directory => file_extension to search for dupes for (not
 # from)
 my $dirext = {
@@ -138,11 +140,11 @@ sub pass_pkgs {
     # Prevent perl from deletion
     my $pkg_delete_names = [ keys %$pkgs_delete ];
     foreach my $pkg (@$pkg_delete_names) {
-        if ( $pkg =~ m/^perl-\d/ ) {
+        if ( $pkg =~ m/^perl(-threaded)?-\d/ ) {
             if ($debug) {
-                warn "Dupes found in $pkg package itself:";
+                warn "Dupes found in $pkg package itself:\n";
                 foreach my $fn ( keys %{ $$pkgs_delete{ $pkg } } ) {
-                    warn $fn;
+                    warn "$fn\n";
                 }
             }
             delete $$pkgs_delete{ $pkg };
@@ -169,3 +171,163 @@ sub pass_pkgs {
 
 my $files = pass_perl_core_tree( $dirext => $incs );
 pass_pkgs($files);
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Inclusure - Remove FreeBSD package/moduless same as those included in perl
+package itself.
+
+=head1 VERSION
+
+This documentation refers to Inclusure version 0.0.1.
+
+=head1 USAGE
+
+The best and the first thing to remember is: till you do not pass the -f key to the
+Inclusure it will not harm anything.
+
+To know out how much is your problem run:
+
+    perl inclosure.pl
+
+This will show you what package(s) Inclusure is about to pkg_delete(1). It
+shouldn't output the perl package itself here.
+
+    perl inclusure.pl -d
+
+This will show you the duplicates for those modules already found in your
+installed Perl package.  The only exclusion is the C<BSDPAN/ExtUtils/*> files
+as perl package currently installs more than one copy of those modules. If
+however there are other files on the standard error output this may sound as a
+reason to delete the certain package(s).
+
+To perform the real action(s) do:
+
+    perl inclusure.pl -f
+
+=head1 OPTIONS
+
+    -h  show built-in commands help
+    -d  show debug information including dupe files found, non-dupe files  to
+        be deleted with the packages and dupe files not related to any package
+    -f  Perform the package(s) deletion(s)
+
+=head1 DESCRIPTION
+
+As long as more and more modules are being included in every upcoming Perl core
+distribution the more of them are getting duplicated in a FreeBSD system
+because typically all of them are needed package(s) formerly installed from the
+corresponding ports or via BSDPAN for the previous Perl packages installed
+earlier those did not contain them yet.
+
+This may lead to errors those are not that easy to discover, e. g., having
+different XS modules on the system is not necessarily to warn you about
+different XS part of the module loaded for the same particular perl module when
+you use it.
+
+Inclusure is a script  to prevent such a situation(s) by mean of finding the
+modules files on the other C<@INC> elements than the directories that Perl
+treats as its own: that means the dupes. Then Inclusure tries to delete the
+packages that installed them if C<-f> command line key is supplied, or prints
+them on the standard output if you need to make anything different with them
+otherwise.
+
+=head1 DIAGNOSTICS
+
+Warnings use to be generated when C<-d> command line argument is supplied:
+
+    "Dupe found: <file name>"
+
+- name of the file considered to be as dupe
+
+    "File is not from packages: <file name>"
+
+- file name which is a dupe but does not belong to any package.
+
+    "Dupes found in <package name> package itself:"
+    <file name> ...
+
+- file name(s) found in the what Inclusure believes to be a Perl package
+
+
+    "Additionally file to be deleted by pkg_delete(1) of <package name>:
+    <file name>"
+
+- file name(s) to be deleted while not being a dupes. Those are typically a
+module build helpers and C<man> files but can be of any kind.
+
+=head1 CONFIGURATION AND ENVIRONMENT
+
+You can tweak the C<$dirext> variable on your own opinion on location of files
+the duplicate(s) of which can be searched, and the extension(s) or the whole
+regexp to correspond to them.
+
+If you use a 'site customise' feature of Perl and custom-make your @INC then
+the behavior of Inclusure will depend on those changes.
+
+Be sure to have a consistent packages database on your C<FreeBSD> system and a
+C<perl-after-upgrade -f> to transfer all your modules to the new directories
+after upgrade before to use Inclusure.
+
+=head1 DEPENDENCIES
+
+L<File::Find> is a part of a core Perl distribution.
+
+L<FreeBSD::Pkgs> is a module that works with package database of C<FreeBSD>
+operating system.  Available via the C<sysutils/p5-FreeBSD-Pkgs> port.
+
+=head1 INCOMPATIBILITIES
+
+The packages are used to be deleted despite of their dependencies. This may
+break perl and perl-dependent applications present on your system.
+
+=head1 BUGS AND LIMITATIONS
+
+The Perl package is assumed to be the perl-E<lt>numberE<gt> or
+perl-threaded-E<lt>numberE<gt>. Any other kind of perl package is about to be
+deleted despite of dependencies by now.
+
+You should fix the dependencies on deleted modules yourself, I'd suggest
+C<pkgdb -F> tool from C<sysutils/portupgrade> port for this.
+
+This script do not fix the duplicate modules installed with bypassing the
+FreeBSD packages system.
+
+The modules installed with the core Perl distribution can have different files
+set and functionality and that difference may cause inconsistences in your
+existing application(s).
+
+Please report problems to Peter Vereshagin <peter@vereshagin.org>.
+Patches are welcome.
+
+=head1 AUTHOR
+
+Peter Vereshagin <peter@vereshagin.org> L<http://vereshagin.org>
+
+=head1 LICENCE AND COPYRIGHT
+
+Copyright (c) 2011 Peter Vereshagin <peter@vereshagin.org>. All rights
+reserved.
+
+This module is free software; you can redistribute it and/or modify it under
+the terms of BSD license. See the LICENSE file in the archive/repository or
+L<http://www.freebsd.org/copyright/freebsd%2Elicense.html> web page.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.
+
+=head1 SEE ALSO
+
+Latest snapshot is available from L<http://gitweb.vereshagin.org/inclusure>
+interface to my public Git repositories.
+
+GitHub page is: L<http://github.com/petr999/inclusure> .
+
+L<perl-after-upgrade>(1) .
+
+=cut

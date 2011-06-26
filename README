@@ -1,0 +1,154 @@
+INCLUSURE(1)          User Contributed Perl Documentation         INCLUSURE(1)
+
+
+
+NNAAMMEE
+       Inclusure - Remove FreeBSD package/moduless same as those included in
+       perl package itself.
+
+VVEERRSSIIOONN
+       This documentation refers to Inclusure version 0.0.1.
+
+UUSSAAGGEE
+       The best and the first thing to remember is: till you do not pass the
+       -f key to the Inclusure it will not harm anything.
+
+       To know out how much is your problem run:
+
+           perl inclosure.pl
+
+       This will show you what package(s) Inclusure is about to _p_k_g___d_e_l_e_t_e(1).
+       It shouldn't output the perl package itself here.
+
+           perl inclusure.pl -d
+
+       This will show you the duplicates for those modules already found in
+       your installed Perl package.  The only exclusion is the
+       "BSDPAN/ExtUtils/*" files as perl package currently installs more than
+       one copy of those modules. If however there are other files on the
+       standard error output this may sound as a reason to delete the certain
+       package(s).
+
+       To perform the real action(s) do:
+
+           perl inclusure.pl -f
+
+OOPPTTIIOONNSS
+           -h  show built-in commands help
+           -d  show debug information including dupe files found, non-dupe files  to
+               be deleted with the packages and dupe files not related to any package
+           -f  Perform the package(s) deletion(s)
+
+DDEESSCCRRIIPPTTIIOONN
+       As long as more and more modules are being included in every upcoming
+       Perl core distribution the more of them are getting duplicated in a
+       FreeBSD system because typically all of them are needed package(s)
+       formerly installed from the corresponding ports or via BSDPAN for the
+       previous Perl packages installed earlier those did not contain them
+       yet.
+
+       This may lead to errors those are not that easy to discover, e. g.,
+       having different XS modules on the system is not necessarily to warn
+       you about different XS part of the module loaded for the same
+       particular perl module when you use it.
+
+       Inclusure is a script  to prevent such a situation(s) by mean of
+       finding the modules files on the other @INC elements than the
+       directories that Perl treats as its own: that means the dupes. Then
+       Inclusure tries to delete the packages that installed them if "-f"
+       command line key is supplied, or prints them on the standard output if
+       you need to make anything different with them otherwise.
+
+DDIIAAGGNNOOSSTTIICCSS
+       Warnings use to be generated when "-d" command line argument is
+       supplied:
+
+           "Dupe found: <file name>"
+
+       - name of the file considered to be as dupe
+
+           "File is not from packages: <file name>"
+
+       - file name which is a dupe but does not belong to any package.
+
+           "Dupes found in <package name> package itself:"
+           <file name> ...
+
+       - file name(s) found in the what Inclusure believes to be a Perl
+       package
+
+           "Additionally file to be deleted by pkg_delete(1) of <package name>:
+           <file name>"
+
+       - file name(s) to be deleted while not being a dupes. Those are
+       typically a module build helpers and "man" files but can be of any
+       kind.
+
+CCOONNFFIIGGUURRAATTIIOONN AANNDD EENNVVIIRROONNMMEENNTT
+       You can tweak the $dirext variable on your own opinion on location of
+       files the duplicate(s) of which can be searched, and the extension(s)
+       or the whole regexp to correspond to them.
+
+       If you use a 'site customise' feature of Perl and custom-make your @INC
+       then the behavior of Inclusure will depend on those changes.
+
+       Be sure to have a consistent packages database on your "FreeBSD" system
+       and a "perl-after-upgrade -f" to transfer all your modules to the new
+       directories after upgrade before to use Inclusure.
+
+DDEEPPEENNDDEENNCCIIEESS
+       File::Find is a part of a core Perl distribution.
+
+       FreeBSD::Pkgs is a module that works with package database of "FreeBSD"
+       operating system.  Available via the "sysutils/p5-FreeBSD-Pkgs" port.
+
+IINNCCOOMMPPAATTIIBBIILLIITTIIEESS
+       The packages are used to be deleted despite of their dependencies. This
+       may break perl and perl-dependent applications present on your system.
+
+BBUUGGSS AANNDD LLIIMMIITTAATTIIOONNSS
+       The Perl package is assumed to be the perl-<number> or
+       perl-threaded-<number>. Any other kind of perl package is about to be
+       deleted despite of dependencies by now.
+
+       You should fix the dependencies on deleted modules yourself, I'd
+       suggest "pkgdb -F" tool from "sysutils/portupgrade" port for this.
+
+       This script do not fix the duplicate modules installed with bypassing
+       the FreeBSD packages system.
+
+       The modules installed with the core Perl distribution can have
+       different files set and functionality and that difference may cause
+       inconsistences in your existing application(s).
+
+       Please report problems to Peter Vereshagin <peter@vereshagin.org>.
+       Patches are welcome.
+
+AAUUTTHHOORR
+       Peter Vereshagin <peter@vereshagin.org> <http://vereshagin.org>
+
+LLIICCEENNCCEE AANNDD CCOOPPYYRRIIGGHHTT
+       Copyright (c) 2011 Peter Vereshagin <peter@vereshagin.org>. All rights
+       reserved.
+
+       This module is free software; you can redistribute it and/or modify it
+       under the terms of BSD license. See the LICENSE file in the
+       archive/repository or
+       <http://www.freebsd.org/copyright/freebsd%2Elicense.html> web page.
+
+       This program is distributed in the hope that it will be useful, but
+       WITHOUT ANY WARRANTY; without even the implied warranty of
+       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+SSEEEE AALLSSOO
+       Latest snapshot is available from
+       <http://gitweb.vereshagin.org/inclusure> interface to my public Git
+       repositories.
+
+       GitHub page is: <http://github.com/petr999/inclusure> .
+
+       perl-after-upgrade(1) .
+
+
+
+perl v5.14.1                      2011-06-26                      INCLUSURE(1)
