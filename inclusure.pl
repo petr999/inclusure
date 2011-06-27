@@ -192,12 +192,12 @@ Inclusure it will not harm anything.
 
 To know out how much is your problem run:
 
-    perl inclosure.pl
+    $ perl inclosure.pl
 
 This will show you what package(s) Inclusure is about to pkg_delete(1). It
 shouldn't output the perl package itself here.
 
-    perl inclusure.pl -d
+    $ perl inclusure.pl -d
 
 This will show you the duplicates for those modules already found in your
 installed Perl package.  The only exclusion is the C<BSDPAN/ExtUtils/*> files
@@ -207,7 +207,7 @@ reason to delete the certain package(s).
 
 To perform the real action(s) do:
 
-    perl inclusure.pl -f
+    # perl inclusure.pl -f
 
 =head1 OPTIONS
 
@@ -266,7 +266,7 @@ You can tweak the C<$dirext> variable on your own opinion on location of files
 the duplicate(s) of which can be searched, and the extension(s) or the whole
 regexp to correspond to them.
 
-If you use a 'site customise' feature of Perl and custom-make your @INC then
+If you use a 'site customize' feature of Perl and custom-make your @INC then
 the behavior of Inclusure will depend on those changes.
 
 Be sure to have a consistent packages database on your C<FreeBSD> system and a
