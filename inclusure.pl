@@ -49,6 +49,7 @@ already included in Perl core distribution, lang/perlX port.
 files(s) will be included for deletion and so on.
     -f      Run pkg_delete on the packages reported
 EOT
+    exit;
 }
 
 # Passes by perl core tree(s) finding a file(s)  matching the regex
