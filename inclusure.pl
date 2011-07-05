@@ -166,6 +166,9 @@ sub pass_pkgs {
         print "About to delete package: $pkg_delete\n";
         unless ($dry) { system 'pkg_delete', '-f', $pkg_delete }
     }
+    unless( ( keys %$pkgs_delete ) > 0 ) {
+        print "No packages to delete\n";
+    }
 }
 
 ### MAIN
